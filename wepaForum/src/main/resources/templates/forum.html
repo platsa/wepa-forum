@@ -1,0 +1,11 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Forum</title>
+        <meta charset="UTF-8" />
+    </head>
+    <body>
+        <h1>Text here</h1>
+        <h2>Messages --- <span sec:authentication="username">Username</span> <form method="post" action="#" th:action="@{/logout}"><input type="submit" name="logout" value="Logout"/></form></h2>
+    </body>
+</html>

@@ -16,7 +16,17 @@ public class Account extends AbstractPersistable<Long> {
     private String password;
     @NotBlank
     private String permission;
+    
+    public Account() {
+        
+    }
 
+    public Account(String username, String password, String permission) {
+        this.username = username;
+        this.password = password;
+        this.permission = permission;
+    }
+    
     public String getUsername() {
         return username;
     }
