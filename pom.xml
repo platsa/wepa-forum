@@ -65,7 +65,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>my.package.MyStartClass</mainClass>
+                    <mainClass>wepaForum.WepaForumApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>
