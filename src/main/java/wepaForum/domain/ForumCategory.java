@@ -2,6 +2,7 @@ package wepaForum.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
@@ -12,6 +13,7 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 @Entity
 public class ForumCategory extends AbstractPersistable<Long> {
     @NotBlank
+    @Column(unique = true)
     @Length(min = 1, max = 100)
     private String category;
     @OneToMany(fetch = FetchType.EAGER)

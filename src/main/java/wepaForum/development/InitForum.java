@@ -50,7 +50,7 @@ public class InitForum {
         SubForum subForum = new SubForum("Testataan etusivua");
         subForumRepository.save(subForum);
         category.addSubForum(subForum);
-        
+
         forumRepository.save(forum);
         forumCategoryRepository.save(category);
         subForumRepository.save(subForum);

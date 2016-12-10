@@ -29,9 +29,10 @@
                 </ul>
                 <div sec:authorize="hasAuthority('ADMIN')">
                     <h3>Add a new subforum to this category:</h3>
-                    <form th:action="@{/category/{id}(id=${category.id})}" th:method="POST">
-                        <input type="text" name="subject"></input><br/>
+                    <form action="#" th:action="@{/category/{id}(id=${category.id})}" th:object="${subForum}" th:method="POST">
+                        <input type="text" th:field="*{subject}"></input><br/>
                         <input type="submit" value="Add"/>
+                        <p th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}">SubForum Error</p>
                     </form>
                 </div>
             </div>

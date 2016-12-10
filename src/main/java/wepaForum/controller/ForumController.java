@@ -41,6 +41,11 @@ public class ForumController {
         return new ForumCategory();
     }
     
+    @ModelAttribute
+    private SubForum getSubForum() {       
+        return new SubForum();
+    }
+    
     @RequestMapping(method = RequestMethod.GET)
     public String view(Model model) {
         model.addAttribute("forums", forumRepository.findAll());
@@ -50,15 +55,17 @@ public class ForumController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @RequestMapping(value = "{id}", method = RequestMethod.POST)
     @Transactional
-    public String add(
+    public String addForumCategory(
             @Valid @ModelAttribute ForumCategory forumCategory,
             BindingResult bindingResult, @PathVariable("id") Long id, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("forums", forumRepository.findAll());
             return "forum";
         }
-        forumRepository.findOne(id).getForumCategories().add(forumCategory);
+        
         forumCategoryRepository.save(forumCategory);
+        forumRepository.findOne(id).addForumCategory(forumCategory);
+        System.out.println("---------------------------Täällä!!");
         return "redirect:/forum";
     }
     
@@ -66,7 +73,7 @@ public class ForumController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @RequestMapping(value = "{forumId}/{id}", method = RequestMethod.DELETE)
     @Transactional
-    public String delete(@PathVariable("forumId") Long forumId, @PathVariable("id") Long id) {
+    public String deleteForumCategory(@PathVariable("forumId") Long forumId, @PathVariable("id") Long id) {
         ForumCategory category = forumCategoryRepository.findOne(id);
         //Poistetaan ensin kaikki jäämät.
         for (Iterator<SubForum> itSub = category.getSubForums().iterator(); itSub.hasNext();) {
