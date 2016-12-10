@@ -11,10 +11,10 @@
             <li th:each="forum : ${forums}">
                 <span th:text="${forum.name}">Forum</span>
                 <ul>
-                    <li th:each="category : ${forum.forumcategories}">
-                        <span th:text="${category.name}">Category</span>
+                    <li th:each="forumcategory : ${forum.forumCategories}">
+                        <span th:text="${forumcategory.category}">Category</span>
                         <ul>
-                            <li th:each="subforum : ${category.subforums}">
+                            <li th:each="subforum : ${forumcategory.subForums}">
                                 <span th:text="${subforum.subject}">SubForum subject</span>
                             </li>
                         </ul>
