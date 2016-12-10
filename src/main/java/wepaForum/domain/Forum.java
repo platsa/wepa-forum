@@ -17,6 +17,12 @@ public class Forum extends AbstractPersistable<Long> {
     @OneToMany(fetch = FetchType.EAGER)
     private List<ForumCategory> forumCategories;
     
+    public Forum() {}
+    
+    public Forum(String name) {
+        this.name = name;
+    }
+    
     public void setName(String name) {
         this.name = name;
     }

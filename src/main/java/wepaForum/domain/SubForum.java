@@ -17,6 +17,12 @@ public class SubForum extends AbstractPersistable<Long> {
     @OneToMany(fetch = FetchType.LAZY)
     private List<Topic> topics;
     
+    public SubForum() {}
+    
+    public SubForum(String subject) {
+        this.subject = subject;
+    }
+    
     public void setSubject(String subject) {
         this.subject = subject;
     }

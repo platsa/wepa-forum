@@ -1,11 +1,27 @@
 <!DOCTYPE HTML>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.springframework.org/security/tags">
     <head>
         <title>Forum</title>
         <meta charset="UTF-8" />
     </head>
     <body>
+
+        <h2>Logged in as <span sec:authentication="name">Username</span> <form method="post" action="#" th:action="@{/logout}"><input type="submit" name="logout" value="Logout"/></form></h2>
+        <ul>
+            <li th:each="forum : ${forums}">
+                <span th:text="${forum.name}">Forum</span>
+                <ul>
+                    <li th:each="category : ${forum.forumcategories}">
+                        <span th:text="${category.name}">Category</span>
+                        <ul>
+                            <li th:each="subforum : ${category.subforums}">
+                                <span th:text="${subforum.subject}">SubForum subject</span>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
         <h1>Text here</h1>
-        <h2>Messages --- <span sec:authentication="username">Username</span> <form method="post" action="#" th:action="@{/logout}"><input type="submit" name="logout" value="Logout"/></form></h2>
     </body>
 </html>

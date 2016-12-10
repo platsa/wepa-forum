@@ -17,6 +17,12 @@ public class ForumCategory extends AbstractPersistable<Long> {
     @OneToMany(fetch = FetchType.EAGER)
     private List<SubForum> subForums;
     
+    public ForumCategory() {}
+    
+    public ForumCategory(String category) {
+        this.category = category;
+    }
+    
     public void setCategory(String category) {
         this.category = category;
     }
