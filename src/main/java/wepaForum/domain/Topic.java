@@ -7,9 +7,10 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Entity
-public class Topic {
+public class Topic extends AbstractPersistable<Long> {
     @NotBlank
     @Length(max = 100)
     private String subject;
