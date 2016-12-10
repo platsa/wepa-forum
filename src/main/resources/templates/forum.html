@@ -6,22 +6,18 @@
     </head>
     <body>
 
-        <h2>Logged in as <span sec:authentication="name">Username</span> <form method="post" action="#" th:action="@{/logout}"><input type="submit" name="logout" value="Logout"/></form></h2>
-        <ul>
-            <li th:each="forum : ${forums}">
-                <span th:text="${forum.name}">Forum</span>
+        <p>Logged in as <span sec:authentication="name">Username</span> <form method="post" action="#" th:action="@{/logout}"><input type="submit" name="logout" value="Logout"/></form></p>
+        
+        <div th:each="forum : ${forums}">
+            <h1>Welcome to <span th:text="${forum.name}">Title</span></h1>
+            <div th:each="forumcategory : ${forum.forumCategories}">
+                <h2 th:text="${forumcategory.category}">Category</h2>
                 <ul>
-                    <li th:each="forumcategory : ${forum.forumCategories}">
-                        <span th:text="${forumcategory.category}">Category</span>
-                        <ul>
-                            <li th:each="subforum : ${forumcategory.subForums}">
-                                <span th:text="${subforum.subject}">SubForum subject</span>
-                            </li>
-                        </ul>
+                    <li th:each="subforum : ${forumcategory.subForums}">
+                    <a th:href="@{/forum/{id}(id=${subforum.id})}" th:text="${subforum.subject}"></a>
                     </li>
                 </ul>
-            </li>
-        </ul>
-        <h1>Text here</h1>
+            </div>
+        </div>
     </body>
 </html>
