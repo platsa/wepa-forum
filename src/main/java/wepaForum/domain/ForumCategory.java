@@ -12,7 +12,7 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 @Entity
 public class ForumCategory extends AbstractPersistable<Long> {
     @NotBlank
-    @Length(max = 100)
+    @Length(min = 1, max = 100)
     private String category;
     @OneToMany(fetch = FetchType.EAGER)
     private List<SubForum> subForums;

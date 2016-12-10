@@ -2,10 +2,13 @@ package wepaForum.controller;
 
 import java.util.Iterator;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,6 +37,11 @@ public class ForumController {
     @Autowired
     private MessageRepository messageRepository;
     
+    @ModelAttribute
+    private ForumCategory getForumCategory() {
+        return new ForumCategory();
+    }
+    
     @RequestMapping(method = RequestMethod.GET)
     public String view(Model model) {
         model.addAttribute("forums", forumRepository.findAll());
@@ -43,20 +51,25 @@ public class ForumController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @RequestMapping(value = "{id}", method = RequestMethod.POST)
     @Transactional
-    public String add(@PathVariable("id") Long id, @RequestParam String category) {
-        ForumCategory forumCategory = new ForumCategory(category);
-        
+    public String add(
+            @Valid @ModelAttribute ForumCategory forumCategory,
+            BindingResult bindingResult, @PathVariable("id") Long id, Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("forums", forumRepository.findAll());
+            return "forum";
+        }
         forumRepository.findOne(id).getForumCategories().add(forumCategory);
         forumCategoryRepository.save(forumCategory);
         return "redirect:/forum";
     }
+    
     
     @PreAuthorize("hasAuthority('ADMIN')")
     @RequestMapping(value = "{forumId}/{id}", method = RequestMethod.DELETE)
     @Transactional
     public String delete(@PathVariable("forumId") Long forumId, @PathVariable("id") Long id) {
         ForumCategory category = forumCategoryRepository.findOne(id);
-        //Poistetaan kaikki jäämät.
+        //Poistetaan ensin kaikki jäämät.
         for (Iterator<SubForum> itSub = category.getSubForums().iterator(); itSub.hasNext();) {
             SubForum subForum = itSub.next();
             for (Iterator<Topic> itTopic = subForum.getTopics().iterator(); itTopic.hasNext();) {
@@ -74,7 +87,6 @@ public class ForumController {
         }
         forumRepository.findOne(forumId).getForumCategories().remove(category);
         forumCategoryRepository.delete(id);
-        System.out.println("------------------------------" + subForumRepository.findAll().size());
         return "redirect:/forum";
     }
 }

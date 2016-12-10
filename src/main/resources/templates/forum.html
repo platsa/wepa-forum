@@ -37,9 +37,10 @@
             </div>
             <div sec:authorize="hasAuthority('ADMIN')">
                 <h2>Add a new category:</h2>
-                <form th:action="@{/forum/{id}(id=${forum.id})}" th:method="POST">
-                    <input type="text" name="category"></input><br/>
+                <form action="#" th:action="@{/forum/{id}(id=${forum.id})}" th:object="${forumCategory}" th:method="POST">
+                    <input type="text" th:field="*{category}"></input><br/>
                     <input type="submit" value="Add"/>
+                    <p th:if="${#fields.hasErrors('category')}" th:errors="*{category}">Category Error</p>
                 </form>
             </div>
         </div>
