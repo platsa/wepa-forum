@@ -14,7 +14,7 @@ public class Forum extends AbstractPersistable<Long> {
     @NotBlank
     @Length(max = 100)
     private String name;
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany//(fetch = FetchType.EAGER) Aiheuttaa kummia virheitä.
     private List<ForumCategory> forumCategories;
     
     public Forum() {}

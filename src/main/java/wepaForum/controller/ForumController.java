@@ -36,12 +36,12 @@ public class ForumController {
     @Autowired
     private MessageRepository messageRepository;
     
-    @ModelAttribute
+    @ModelAttribute("forumCategory")
     private ForumCategory getForumCategory() {
         return new ForumCategory();
     }
     
-    @ModelAttribute
+    @ModelAttribute("subForum")
     private SubForum getSubForum() {       
         return new SubForum();
     }
@@ -56,7 +56,7 @@ public class ForumController {
     @RequestMapping(value = "{id}", method = RequestMethod.POST)
     @Transactional
     public String addForumCategory(
-            @Valid @ModelAttribute ForumCategory forumCategory,
+            @Valid @ModelAttribute("forumCategory") ForumCategory forumCategory,
             BindingResult bindingResult, @PathVariable("id") Long id, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("forums", forumRepository.findAll());
@@ -65,7 +65,6 @@ public class ForumController {
         
         forumCategoryRepository.save(forumCategory);
         forumRepository.findOne(id).addForumCategory(forumCategory);
-        System.out.println("---------------------------Täällä!!");
         return "redirect:/forum";
     }
     

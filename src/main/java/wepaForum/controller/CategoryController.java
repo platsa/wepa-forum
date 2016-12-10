@@ -40,14 +40,14 @@ public class CategoryController {
     @RequestMapping(value = "{id}", method = RequestMethod.POST)
     @Transactional
     public String addSubForum(
-            @Valid @ModelAttribute SubForum subForum,
+            @Valid @ModelAttribute("subForum") SubForum subForum,
             BindingResult bindingResult, @PathVariable("id") Long id, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("forums", forumRepository.findAll());
             return "forum";
         }
         subForumRepository.save(subForum);
-        forumCategoryRepository.findOne(id).getSubForums().add(subForum);
+        forumCategoryRepository.findOne(id).addSubForum(subForum);
         
         return "redirect:/forum";
     }
