@@ -10,13 +10,37 @@
         
         <div th:each="forum : ${forums}">
             <h1>Welcome to <span th:text="${forum.name}">Title</span></h1>
-            <div th:each="forumcategory : ${forum.forumCategories}">
-                <h2 th:text="${forumcategory.category}">Category</h2>
+            <div th:each="category : ${forum.forumCategories}">
+                <h2 th:text="${category.category}">Category</h2>
+                <div sec:authorize="hasAuthority('ADMIN')">
+                    <form th:action="@{/forum/{forumId}/{id}(forumId=${forum.id}, id=${category.id})}" th:method="DELETE">
+                        <input type="submit" value="Delete"/>
+                    </form>
+                </div>
                 <ul>
-                    <li th:each="subforum : ${forumcategory.subForums}">
-                    <a th:href="@{/forum/{id}(id=${subforum.id})}" th:text="${subforum.subject}"></a>
+                    <li th:each="subforum : ${category.subForums}">
+                    <a th:href="@{/subforum/{id}(id=${subforum.id})}" th:text="${subforum.subject}"></a>
+                    <div sec:authorize="hasAuthority('ADMIN')">
+                        <form th:action="@{/subforum/{id}(id=${subforum.id})}" th:method="DELETE">
+                            <input type="submit" value="Delete"/>
+                        </form>
+                    </div>
                     </li>
                 </ul>
+                <div sec:authorize="hasAuthority('ADMIN')">
+                    <h3>Add a new subforum to this category:</h3>
+                    <form th:action="@{/category/{id}(id=${category.id})}" th:method="POST">
+                        <input type="text" name="subject"></input><br/>
+                        <input type="submit" value="Add"/>
+                    </form>
+                </div>
+            </div>
+            <div sec:authorize="hasAuthority('ADMIN')">
+                <h2>Add a new category:</h2>
+                <form th:action="@{/forum/{id}(id=${forum.id})}" th:method="POST">
+                    <input type="text" name="category"></input><br/>
+                    <input type="submit" value="Add"/>
+                </form>
             </div>
         </div>
     </body>

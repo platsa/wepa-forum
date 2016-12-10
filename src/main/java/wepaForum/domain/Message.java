@@ -3,6 +3,7 @@ package wepaForum.domain;
 import java.util.Calendar;
 import java.util.Date;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import org.hibernate.validator.constraints.Length;
