@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.springframework.org/security/tags">
+    <head>
+        <title>Users</title>
+        <meta charset="UTF-8" />
+    </head>
+    <body>
+        <p>Logged in as <span sec:authentication="name">Username</span> <form method="post" action="#" th:action="@{/logout}"><input type="submit" name="logout" value="Logout"/></form></p>
+        <div sec:authorize="hasAuthority('ADMIN')">
+            <h3>Add user:</h3>
+            <form action="#" th:action="@{/users}" th:object="${account}" method="POST">
+                <table>
+                    <tr>
+                        <td>Username: </td>
+                        <td><input type="text" th:field="*{username}" /></td>
+                        <td th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Name Error</td>
+                    </tr>
+                    <tr>
+                        <td>Password: </td>
+                        <td><input type="text" th:field="*{password}" /></td>
+                        <td th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password Error</td>
+                    </tr>
+                    <tr>
+                        <td>Permission: </td>
+                        <td><select th:field="*{permission}">
+                            <option th:each="permission : ${permissions}" 
+                            th:value="${permission}" 
+                            th:text="${permission}">Permission</option>
+                            </select>
+                        </td>
+                        <td th:if="${#fields.hasErrors('permission')}" th:errors="*{permission}">Permission Error</td>
+                    </tr>
+                    <tr>
+                        <td><button type="submit">Add</button></td>
+                    </tr>
+                </table>
+            </form>
+            <h3>Existing users:</h3>
+        <ul>
+            <li th:each="account : ${accounts}">
+                <p>Username: <span th:text="${account.username}"></span>, Permission: <span th:text="${account.permission}"></span></p>
+                <form th:action="@{/users/{id}(id=${account.id})}" th:method="DELETE">
+                    <input type="submit" value="Delete"/>
+                </form>
+        
+            </li>
+        </ul>
+        </div>
+    </body>
+</html>
