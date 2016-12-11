@@ -16,7 +16,7 @@ public class ForumCategory extends AbstractPersistable<Long> {
     @Column(unique = true)
     @Length(min = 1, max = 100)
     private String category;
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany//(fetch = FetchType.EAGER) Aiheuttaa kummia virheitä.
     private List<SubForum> subForums;
     
     public ForumCategory() {}

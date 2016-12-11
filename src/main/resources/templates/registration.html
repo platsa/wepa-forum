@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.springframework.org/security/tags">
+    <head>
+        <title>Register</title>
+        <meta charset="UTF-8" />
+    </head>
+    <body>
+            <form action="#" th:action="@{/register}" th:object="${account}" method="POST">
+                <table>
+                    <tr>
+                        <td>Username: </td>
+                        <td><input type="text" th:field="*{username}" /></td>
+                        <td th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Name Error</td>
+                    </tr>
+                    <tr>
+                        <td>Password: </td>
+                        <td><input type="text" th:field="*{password}" /></td>
+                        <td th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password Error</td>
+                    </tr>
+                    <tr>
+                        <td><button type="submit">Register</button></td>
+                    </tr>
+                </table>
+            </form>
+    </body>
+</html>
