@@ -8,6 +8,9 @@
         <div sec:authorize="isAnonymous()">
             <p><a th:href="@{/login}">Login</a> or <a th:href="@{/register}">Register</a></p>
         </div>
+        <div sec:authorize="hasAuthority('ADMIN')">
+            <a th:href="@{/users}">User Management</a>
+        </div>
         <div sec:authorize="isAuthenticated()">
             <p>Logged in as <span sec:authentication="name">Username</span> <form method="post" action="#" th:action="@{/logout}"><input type="submit" name="logout" value="Logout"/></form></p>
         </div>

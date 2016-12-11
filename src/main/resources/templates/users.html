@@ -5,6 +5,7 @@
         <meta charset="UTF-8" />
     </head>
     <body>
+        <a th:href="@{/forum}">Back to Forums</a>
         <p>Logged in as <span sec:authentication="name">Username</span> <form method="post" action="#" th:action="@{/logout}"><input type="submit" name="logout" value="Logout"/></form></p>
         <div sec:authorize="hasAuthority('ADMIN')">
             <h3>Add user:</h3>
