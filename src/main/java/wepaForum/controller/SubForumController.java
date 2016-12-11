@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import wepaForum.domain.Message;
-import wepaForum.domain.SubForum;
 import wepaForum.domain.Topic;
 import wepaForum.repository.MessageRepository;
 import wepaForum.repository.SubForumRepository;

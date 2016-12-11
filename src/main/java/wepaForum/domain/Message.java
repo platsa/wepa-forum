@@ -19,6 +19,13 @@ public class Message  extends AbstractPersistable<Long> {
     private Date date;
     private String username;
     
+    public Message() {}
+    
+    public Message(String message, String username) {
+        this.message = message;
+        this.username = username;
+    }
+    
     public void setMessage(String message) {
         this.message = message;
     }

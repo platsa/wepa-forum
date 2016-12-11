@@ -1,5 +1,6 @@
 package wepaForum.development;
 
+import java.util.Calendar;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -8,11 +9,13 @@ import org.springframework.stereotype.Component;
 import wepaForum.domain.Account;
 import wepaForum.domain.Forum;
 import wepaForum.domain.ForumCategory;
+import wepaForum.domain.Message;
 import wepaForum.domain.SubForum;
 import wepaForum.domain.Topic;
 import wepaForum.repository.AccountRepository;
 import wepaForum.repository.ForumCategoryRepository;
 import wepaForum.repository.ForumRepository;
+import wepaForum.repository.MessageRepository;
 import wepaForum.repository.SubForumRepository;
 import wepaForum.repository.TopicRepository;
 
@@ -31,6 +34,8 @@ public class InitForum {
     private SubForumRepository subForumRepository;
     @Autowired
     private TopicRepository topicRepository;
+    @Autowired
+    private MessageRepository messageRepository;
     
     @PostConstruct
     public void init() {
@@ -58,6 +63,11 @@ public class InitForum {
         Topic topic = new Topic("Ensimmäinen aihe");
         topicRepository.save(topic);
         subForum.addTopic(topic);
+        
+        Message message = new Message("Hello World!", "admin");
+        message.setDate(Calendar.getInstance().getTime());
+        messageRepository.save(message);
+        topic.addMessage(message);
 
         forumRepository.save(forum);
         forumCategoryRepository.save(category);
