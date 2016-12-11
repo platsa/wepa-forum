@@ -9,10 +9,12 @@ import wepaForum.domain.Account;
 import wepaForum.domain.Forum;
 import wepaForum.domain.ForumCategory;
 import wepaForum.domain.SubForum;
+import wepaForum.domain.Topic;
 import wepaForum.repository.AccountRepository;
 import wepaForum.repository.ForumCategoryRepository;
 import wepaForum.repository.ForumRepository;
 import wepaForum.repository.SubForumRepository;
+import wepaForum.repository.TopicRepository;
 
 @Component
 @Profile("default")
@@ -27,6 +29,8 @@ public class InitForum {
     private ForumCategoryRepository forumCategoryRepository;
     @Autowired
     private SubForumRepository subForumRepository;
+    @Autowired
+    private TopicRepository topicRepository;
     
     @PostConstruct
     public void init() {
@@ -50,10 +54,15 @@ public class InitForum {
         SubForum subForum = new SubForum("Testataan etusivua");
         subForumRepository.save(subForum);
         category.addSubForum(subForum);
+        
+        Topic topic = new Topic("Ensimmäinen aihe");
+        topicRepository.save(topic);
+        subForum.addTopic(topic);
 
         forumRepository.save(forum);
         forumCategoryRepository.save(category);
         subForumRepository.save(subForum);
+        topicRepository.save(topic);
     }
     
 }

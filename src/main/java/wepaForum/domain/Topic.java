@@ -17,6 +17,12 @@ public class Topic extends AbstractPersistable<Long> {
     @OneToMany(fetch = FetchType.LAZY)
     private List<Message> messages;
     
+    public Topic() {}
+    
+    public Topic(String subject) {
+        this.subject = subject;
+    }
+    
     public void setSubject(String subject) {
         this.subject = subject;
     }

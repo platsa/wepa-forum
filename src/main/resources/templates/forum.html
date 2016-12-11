@@ -21,7 +21,7 @@
                     <li th:each="subforum : ${category.subForums}">
                     <a th:href="@{/subforum/{id}(id=${subforum.id})}" th:text="${subforum.subject}"></a>
                     <div sec:authorize="hasAuthority('ADMIN')">
-                        <form th:action="@{/subforum/{id}(id=${subforum.id})}" th:method="DELETE">
+                        <form th:action="@{/category/{categoryId}/{id}(categoryId=${category.id}, id=${subforum.id})}" th:method="DELETE">
                             <input type="submit" value="Delete"/>
                         </form>
                     </div>

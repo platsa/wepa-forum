@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import wepaForum.domain.Message;
 import wepaForum.domain.SubForum;
 import wepaForum.domain.Topic;
@@ -49,6 +48,27 @@ public class CategoryController {
         subForumRepository.save(subForum);
         forumCategoryRepository.findOne(id).addSubForum(subForum);
         
+        return "redirect:/forum";
+    }
+    
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @RequestMapping(value = "{categoryId}/{id}", method = RequestMethod.DELETE)
+    @Transactional
+    public String deleteSubForum(@PathVariable("categoryId") Long categoryId, @PathVariable("id") Long id) {
+        SubForum subForum = subForumRepository.findOne(id);
+        //Poistetaan ensin kaikki jäämät.
+        for (Iterator<Topic> itTopic = subForum.getTopics().iterator(); itTopic.hasNext();) {
+            Topic topic = itTopic.next();
+            for (Iterator<Message> itMessage = topic.getMessages().iterator(); itMessage.hasNext();) {
+                Message message = itMessage.next();
+                itMessage.remove();
+                messageRepository.delete(message.getId());
+            }
+            itTopic.remove();
+            topicRepository.delete(topic.getId());
+        }
+        forumCategoryRepository.findOne(categoryId).getSubForums().remove(subForum);
+        subForumRepository.delete(id);
         return "redirect:/forum";
     }
 }

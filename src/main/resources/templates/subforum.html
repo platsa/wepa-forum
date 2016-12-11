@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.springframework.org/security/tags">
+    <head>
+        <title th:text="${subForum.subject}">SubForum</title>
+        <meta charset="UTF-8" />
+    </head>
+    <body>
+
+        <p>Logged in as <span sec:authentication="name">Username</span> <form method="post" action="#" th:action="@{/logout}"><input type="submit" name="logout" value="Logout"/></form></p>
+        <a th:href="@{/forum}">Back to Forums</a>
+        
+        <ul>
+            <li th:each="topic : ${subForum.topics}">
+                <a th:href="@{/topic/{id}(id=${topic.id})}" th:text="${topic.subject}"></a>
+                <div sec:authorize="hasAnyAuthority('ADMIN','MODERATOR')">
+                    <form th:action="@{/subforum/{subforumId}/{id}(subforumId=${subForum.id}, id=${topic.id})}" th:method="DELETE">
+                        <input type="submit" value="Delete"/>
+                    </form>
+                </div>
+            </li>
+        </ul>
+        
+        <div sec:authorize="hasAnyAuthority('ADMIN','MODERATOR','USER')">
+            <h2>Add a new topic:</h2>
+            <form action="#" th:action="@{/subforum/{id}(id=${subForum.id})}" th:object="${topic}" th:method="POST">
+                <input type="text" th:field="*{subject}"></input><br/>
+                <input type="submit" value="Add"/>
+                <p th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}">Subject Error</p>
+            </form>
+        </div>
+        
+    </body>
+</html>
