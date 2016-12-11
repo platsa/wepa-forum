@@ -12,7 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 public class Message  extends AbstractPersistable<Long> {
     @NotBlank
-    @Length(max = 1000)
+    @Length(min = 1, max = 1000)
     private String message;
     @Temporal(value = TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")

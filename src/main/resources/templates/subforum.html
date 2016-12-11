@@ -21,7 +21,7 @@
         </ul>
         
         <div sec:authorize="hasAnyAuthority('ADMIN','MODERATOR','USER')">
-            <h2>Add a new topic:</h2>
+            <h3>Add a new topic:</h3>
             <form action="#" th:action="@{/subforum/{id}(id=${subForum.id})}" th:object="${topic}" th:method="POST">
                 <input type="text" th:field="*{subject}"></input><br/>
                 <input type="submit" value="Add"/>
