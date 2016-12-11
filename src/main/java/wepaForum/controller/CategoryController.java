@@ -20,6 +20,7 @@ import wepaForum.repository.ForumRepository;
 import wepaForum.repository.MessageRepository;
 import wepaForum.repository.SubForumRepository;
 import wepaForum.repository.TopicRepository;
+import wepaForum.service.DeletingService;
 
 @Controller
 @RequestMapping("/category")
@@ -31,9 +32,7 @@ public class CategoryController {
     @Autowired
     private SubForumRepository subForumRepository;
     @Autowired
-    private TopicRepository topicRepository;
-    @Autowired
-    private MessageRepository messageRepository;
+    private DeletingService deletingService;
     
     @PreAuthorize("hasAuthority('ADMIN')")
     @RequestMapping(value = "{id}", method = RequestMethod.POST)
@@ -55,20 +54,7 @@ public class CategoryController {
     @RequestMapping(value = "{categoryId}/{id}", method = RequestMethod.DELETE)
     @Transactional
     public String deleteSubForum(@PathVariable("categoryId") Long categoryId, @PathVariable("id") Long id) {
-        SubForum subForum = subForumRepository.findOne(id);
-        //Poistetaan ensin kaikki jäämät.
-        for (Iterator<Topic> itTopic = subForum.getTopics().iterator(); itTopic.hasNext();) {
-            Topic topic = itTopic.next();
-            for (Iterator<Message> itMessage = topic.getMessages().iterator(); itMessage.hasNext();) {
-                Message message = itMessage.next();
-                itMessage.remove();
-                messageRepository.delete(message.getId());
-            }
-            itTopic.remove();
-            topicRepository.delete(topic.getId());
-        }
-        forumCategoryRepository.findOne(categoryId).getSubForums().remove(subForum);
-        subForumRepository.delete(id);
+        deletingService.deleteSubForum(categoryId, id);
         return "redirect:/forum";
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import wepaForum.domain.Message;
 import wepaForum.repository.MessageRepository;
 import wepaForum.repository.TopicRepository;
+import wepaForum.service.DeletingService;
 
 @Controller
 @RequestMapping("/topic")
@@ -24,6 +25,8 @@ public class TopicController {
     private TopicRepository topicRepository;
     @Autowired
     private MessageRepository messageRepository;
+    @Autowired
+    private DeletingService deletingService;
     
     @ModelAttribute("message")
     private Message getMessage() {       
@@ -57,10 +60,8 @@ public class TopicController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MODERATOR')")
     @RequestMapping(value = "{topicId}/{id}", method = RequestMethod.DELETE)
     @Transactional
-    public String deleteTopic(@PathVariable("topicId") Long topicId, @PathVariable("id") Long id) {
-        Message message = messageRepository.findOne(id);
-        topicRepository.findOne(topicId).deleteMessage(message);
-        messageRepository.delete(id);
+    public String deleteMessage(@PathVariable("topicId") Long topicId, @PathVariable("id") Long id) {
+        deletingService.deleteMessage(topicId, id);
         return "redirect:/topic/" + topicId;
     }
 }
