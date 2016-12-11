@@ -1,6 +1,8 @@
 package wepaForum.controller;
 
 import java.util.Calendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import wepaForum.service.DeletingService;
 @Controller
 @RequestMapping("/topic")
 public class TopicController {
+    private static final Logger LOGGER = Logger.getLogger(TopicController.class.getName());
     @Autowired
     private TopicRepository topicRepository;
     @Autowired
@@ -53,7 +56,7 @@ public class TopicController {
         message.setUsername(SecurityContextHolder.getContext().getAuthentication().getName());
         messageRepository.save(message);
         topicRepository.findOne(id).addMessage(message);
-        
+        LOGGER.log(Level.INFO, "User {0} wrote a message to topic {1}", new Object[]{SecurityContextHolder.getContext().getAuthentication().getName(), topicRepository.findOne(id).getSubject()});
         return "redirect:/topic/" + id;
     }
     
@@ -62,6 +65,7 @@ public class TopicController {
     @Transactional
     public String deleteMessage(@PathVariable("topicId") Long topicId, @PathVariable("id") Long id) {
         deletingService.deleteMessage(topicId, id);
+        LOGGER.log(Level.INFO, "User {0} deleted a message from topic {1}", new Object[]{SecurityContextHolder.getContext().getAuthentication().getName(), topicRepository.findOne(topicId).getSubject()});
         return "redirect:/topic/" + topicId;
     }
 }

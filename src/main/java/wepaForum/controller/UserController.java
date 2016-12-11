@@ -1,9 +1,12 @@
 package wepaForum.controller;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +23,7 @@ import wepaForum.repository.AccountRepository;
 @RequestMapping("/users")
 public class UserController {
     private final String[] permissions = {"USER", "MODERATOR", "ADMIN"};
+    private static final Logger LOGGER = Logger.getLogger(UserController.class.getName());
     @Autowired
     private AccountRepository accountRepository;
     @Autowired
@@ -49,10 +53,12 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("accounts", accountRepository.findAll());        
             model.addAttribute("permissions", permissions);
+            LOGGER.log(Level.INFO, "User {0} failed to create a new user", new Object[]{SecurityContextHolder.getContext().getAuthentication().getName()});
             return "users";
         }
         account.setPassword(passwordEncoder.encode(account.getPassword()));
         accountRepository.save(account);
+        LOGGER.log(Level.INFO, "User {0} created user {1} with permission {2}", new Object[]{SecurityContextHolder.getContext().getAuthentication().getName(), account.getUsername(), account.getPermission()});
         return "redirect:/users";
     }
     
@@ -60,7 +66,9 @@ public class UserController {
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     @Transactional
     public String deleteAccount(@PathVariable("id") Long id) {
+        String username = accountRepository.findOne(id).getUsername();
         accountRepository.delete(id);
+        LOGGER.log(Level.INFO, "User {0} deleted user {1}", new Object[]{SecurityContextHolder.getContext().getAuthentication().getName(), username});
         return "redirect:/users";
     }
 }

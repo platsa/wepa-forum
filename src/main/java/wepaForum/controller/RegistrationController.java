@@ -1,7 +1,10 @@
 package wepaForum.controller;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -16,6 +19,7 @@ import wepaForum.repository.AccountRepository;
 @RequestMapping("/register")
 public class RegistrationController {
     private final String permission = "USER";
+    private static final Logger LOGGER = Logger.getLogger(RegistrationController.class.getName());
     @Autowired
     private AccountRepository accountRepository;
     @Autowired
@@ -41,11 +45,12 @@ public class RegistrationController {
             bindingResult.addError(new FieldError("account", "username", "username already taken"));
         }
         if (bindingResult.hasErrors()) {
-            System.out.println("----------------------" + bindingResult);
+            LOGGER.log(Level.INFO, "Anonymous user failed to create a new user");
             return "registration";
         }        
         account.setPassword(passwordEncoder.encode(account.getPassword()));
         accountRepository.save(account);
+        LOGGER.log(Level.INFO, "Anonymous user created user {0} with permission {1}", new Object[]{account.getUsername(), account.getPermission()});
         return "redirect:/login";
     }
 }

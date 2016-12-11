@@ -1,9 +1,12 @@
 package wepaForum.controller;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,6 +23,7 @@ import wepaForum.service.DeletingService;
 @Controller
 @RequestMapping("/forum")
 public class ForumController {
+    private static final Logger LOGGER = Logger.getLogger(ForumController.class.getName());
     @Autowired
     private ForumRepository forumRepository;
     @Autowired
@@ -56,6 +60,7 @@ public class ForumController {
         
         forumCategoryRepository.save(forumCategory);
         forumRepository.findOne(id).addForumCategory(forumCategory);
+        LOGGER.log(Level.INFO, "User {0} created forumcategory {1}", new Object[]{SecurityContextHolder.getContext().getAuthentication().getName(), forumCategory.getCategory()});
         return "redirect:/forum";
     }
     
@@ -64,7 +69,9 @@ public class ForumController {
     @RequestMapping(value = "{forumId}/{id}", method = RequestMethod.DELETE)
     @Transactional
     public String deleteForumCategory(@PathVariable("forumId") Long forumId, @PathVariable("id") Long id) {
+        String category = forumCategoryRepository.findOne(id).getCategory();
         deletingService.deleteForumCategory(forumId, id);
+        LOGGER.log(Level.INFO, "User {0} deleted forumcategory {1}", new Object[]{SecurityContextHolder.getContext().getAuthentication().getName(), category});
         return "redirect:/forum";
     }
 }

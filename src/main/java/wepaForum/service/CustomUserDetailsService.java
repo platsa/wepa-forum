@@ -2,6 +2,8 @@ package wepaForum.service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,7 +15,7 @@ import wepaForum.repository.AccountRepository;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
-    
+    private static final Logger LOGGER = Logger.getLogger(CustomUserDetailsService.class.getName());
     @Autowired
     private AccountRepository accountRepository;
 
@@ -24,6 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("No such user: " + username);
         }
         Account account = accounts.get(0);
+        LOGGER.log(Level.INFO, "User {0} tried to log in", new Object[]{account.getUsername()});
         return new org.springframework.security.core.userdetails.User(
                 account.getUsername(),
                 account.getPassword(),
