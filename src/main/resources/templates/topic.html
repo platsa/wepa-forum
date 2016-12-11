@@ -6,7 +6,12 @@
     </head>
     <body>
 
-        <p>Logged in as <span sec:authentication="name">Username</span> <form method="post" action="#" th:action="@{/logout}"><input type="submit" name="logout" value="Logout"/></form></p>
+        <div sec:authorize="isAnonymous()">
+            <p><a th:href="@{/login}">Login</a> or <a th:href="@{/register}">Register</a></p>
+        </div>
+        <div sec:authorize="isAuthenticated()">
+            <p>Logged in as <span sec:authentication="name">Username</span> <form method="post" action="#" th:action="@{/logout}"><input type="submit" name="logout" value="Logout"/></form></p>
+        </div>
         <a th:href="@{/forum}">Back to Forums</a>
         
         <div th:each="message : ${topic.messages}">

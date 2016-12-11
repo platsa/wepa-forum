@@ -1,7 +1,6 @@
 package wepaForum.controller;
 
 import java.util.Calendar;
-import java.util.Iterator;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
