@@ -45,12 +45,12 @@ public class RegistrationController {
             bindingResult.addError(new FieldError("account", "username", "username already taken"));
         }
         if (bindingResult.hasErrors()) {
-            LOGGER.log(Level.INFO, "Anonymous user failed to create a new user");
+            LOGGER.log(Level.INFO, "{0} failed to create a new user", new Object[]{SecurityContextHolder.getContext().getAuthentication().getName()});
             return "registration";
         }        
         account.setPassword(passwordEncoder.encode(account.getPassword()));
         accountRepository.save(account);
-        LOGGER.log(Level.INFO, "Anonymous user created user {0} with permission {1}", new Object[]{account.getUsername(), account.getPermission()});
+        LOGGER.log(Level.INFO, "{0} created user {1} with permission {2}", new Object[]{SecurityContextHolder.getContext().getAuthentication().getName(), account.getUsername(), account.getPermission()});
         return "redirect:/login";
     }
 }

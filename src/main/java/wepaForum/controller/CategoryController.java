@@ -47,6 +47,7 @@ public class CategoryController {
             BindingResult bindingResult, @PathVariable("id") Long id, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("forums", forumRepository.findAll());
+            LOGGER.log(Level.INFO, "{0} failed to create a new subforum", new Object[]{SecurityContextHolder.getContext().getAuthentication().getName()});
             return "forum";
         }
         subForumRepository.save(subForum);

@@ -50,6 +50,7 @@ public class TopicController {
             BindingResult bindingResult, @PathVariable("id") Long id, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("topic", topicRepository.findOne(id));
+            LOGGER.log(Level.INFO, "{0} failed to write a new message", new Object[]{SecurityContextHolder.getContext().getAuthentication().getName()});
             return "topic";
         }
         message.setDate(Calendar.getInstance().getTime());

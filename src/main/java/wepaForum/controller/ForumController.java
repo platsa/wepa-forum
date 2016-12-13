@@ -55,6 +55,7 @@ public class ForumController {
             BindingResult bindingResult, @PathVariable("id") Long id, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("forums", forumRepository.findAll());
+            LOGGER.log(Level.INFO, "{0} failed to create a new forumcategory", new Object[]{SecurityContextHolder.getContext().getAuthentication().getName()});
             return "forum";
         }
         

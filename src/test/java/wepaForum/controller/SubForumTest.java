@@ -38,7 +38,7 @@ import wepaForum.repository.TopicRepository;
 @ActiveProfiles("test")
 public class SubForumTest {
     private static final String SUBFORUMS_URI = "/subforum/";
-    private static final String tooLong = "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"
+    private static final String TOOLONG = "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"
             + "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"
             + "kkkkkkkkk";
     @Autowired
@@ -165,7 +165,7 @@ public class SubForumTest {
                 .andExpect(status().is2xxSuccessful());
         assertEquals(1, topicRepository.findAll().size());
         
-        mockMvc.perform(post(SUBFORUMS_URI + subForumRepository.findAll().get(0).getId()).param("subject", tooLong))
+        mockMvc.perform(post(SUBFORUMS_URI + subForumRepository.findAll().get(0).getId()).param("subject", TOOLONG))
                 .andExpect(status().is2xxSuccessful());
         assertEquals(1, topicRepository.findAll().size());
         

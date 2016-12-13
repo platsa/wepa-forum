@@ -49,6 +49,7 @@ public class SubForumController {
             BindingResult bindingResult, @PathVariable("id") Long id, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("subForum", subForumRepository.findOne(id));
+            LOGGER.log(Level.INFO, "{0} failed to create a new topic", new Object[]{SecurityContextHolder.getContext().getAuthentication().getName()});
             return "subforum";
         }
         topicRepository.save(topic);
