@@ -99,6 +99,7 @@
     <build>
         <plugins>
             <plugin>
+                <!-- Travis ei meinaa saada ladattua maven-pluginia ja testaus epäonnistuu -->
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
