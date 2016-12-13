@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import wepaForum.domain.Account;
+import wepaForum.domain.Topic;
 import wepaForum.repository.AccountRepository;
 
 @Controller
@@ -43,6 +44,13 @@ public class UserController {
     }
     
     @PreAuthorize("hasAuthority('ADMIN')")
+    @RequestMapping(value = "{id}", method = RequestMethod.GET)
+    public String viewUser(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("account", accountRepository.findOne(id));
+        return "user";
+    }
+    
+    @PreAuthorize("hasAuthority('ADMIN')")
     @RequestMapping(method = RequestMethod.POST)
     public String addAccount(
             @Valid @ModelAttribute("account") Account account,
@@ -66,7 +74,11 @@ public class UserController {
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     @Transactional
     public String deleteAccount(@PathVariable("id") Long id) {
-        String username = accountRepository.findOne(id).getUsername();
+        Account account = accountRepository.findOne(id);
+        String username = account.getUsername();
+        for (Topic topic : account.getTopics()) {
+            topic.getAccounts().remove(account);
+        }
         accountRepository.delete(id);
         LOGGER.log(Level.INFO, "User {0} deleted user {1}", new Object[]{SecurityContextHolder.getContext().getAuthentication().getName(), username});
         return "redirect:/users";

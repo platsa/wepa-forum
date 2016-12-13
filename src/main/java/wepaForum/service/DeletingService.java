@@ -4,10 +4,12 @@ import java.util.Iterator;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import wepaForum.domain.Account;
 import wepaForum.domain.ForumCategory;
 import wepaForum.domain.Message;
 import wepaForum.domain.SubForum;
 import wepaForum.domain.Topic;
+import wepaForum.repository.AccountRepository;
 import wepaForum.repository.ForumCategoryRepository;
 import wepaForum.repository.ForumRepository;
 import wepaForum.repository.MessageRepository;
@@ -16,6 +18,8 @@ import wepaForum.repository.TopicRepository;
 
 @Service
 public class DeletingService {
+    @Autowired
+    private AccountRepository accountRepository;
     @Autowired
     private ForumRepository forumRepository;
     @Autowired
@@ -40,6 +44,9 @@ public class DeletingService {
                     itMessage.remove();
                     messageRepository.delete(message.getId());
                 }
+                for (Account account : topic.getAccounts()) {
+                    account.getTopics().remove(topic);                    
+                }
                 itTopic.remove();
                 topicRepository.delete(topic.getId());
             }
@@ -50,6 +57,7 @@ public class DeletingService {
         forumCategoryRepository.delete(id);
     }
     
+    @Transactional
     public void deleteSubForum(Long categoryId, Long id) {
         SubForum subForum = subForumRepository.findOne(id);
         //Poistetaan ensin kaikki jäämät.
@@ -60,6 +68,9 @@ public class DeletingService {
                 itMessage.remove();
                 messageRepository.delete(message.getId());
             }
+            for (Account account : topic.getAccounts()) {
+                account.getTopics().remove(topic);                    
+            }
             itTopic.remove();
             topicRepository.delete(topic.getId());
         }
@@ -67,6 +78,7 @@ public class DeletingService {
         subForumRepository.delete(id);
     }
     
+    @Transactional
     public void deleteTopic(Long subforumId, Long id) {
         Topic topic = topicRepository.findOne(id);
         //Poistetaan ensin kaikki jäämät.
@@ -75,13 +87,18 @@ public class DeletingService {
             itMessage.remove();
             messageRepository.delete(message.getId());
         }
+        for (Account account : topic.getAccounts()) {
+            account.getTopics().remove(topic);                    
+        }
         subForumRepository.findOne(subforumId).deleteTopic(topic);
         topicRepository.delete(id);
     }
     
+    @Transactional
     public void deleteMessage(Long topicId, Long id) {
         Message message = messageRepository.findOne(id);
         topicRepository.findOne(topicId).deleteMessage(message);
+        accountRepository.findByUsername(message.getUsername()).get(0).getTopics().remove(topicRepository.findOne(id));
         messageRepository.delete(id);
     }
 }

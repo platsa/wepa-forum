@@ -1,7 +1,10 @@
 package wepaForum.domain;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.jpa.domain.AbstractPersistable;
@@ -16,6 +19,8 @@ public class Account extends AbstractPersistable<Long> {
     private String password;
     @NotBlank
     private String permission;
+    @ManyToMany
+    private List<Topic> topics;
     
     public Account() {
         
@@ -49,5 +54,21 @@ public class Account extends AbstractPersistable<Long> {
     
     public String getPermission() {
         return this.permission;
+    }
+    
+    public void setTopics(List<Topic> topics) {
+        this.topics = topics;
+    }
+    
+    public List<Topic> getTopics() {
+        if (topics == null)
+            topics = new ArrayList<>();
+        return topics;
+    }
+    
+    public void addTopic(Topic topic) {
+        if (topics == null)
+            topics = new ArrayList<>();
+        topics.add(topic);
     }
 }

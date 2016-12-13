@@ -39,16 +39,15 @@ public class InitForum {
     
     @PostConstruct
     public void init() {
-        if (accountRepository.findAll().isEmpty()) {
-            Account user = new Account("user", passwordEncoder.encode("user"), "USER");
-            accountRepository.save(user);
+        Account user = new Account("user", passwordEncoder.encode("user"), "USER");
+        accountRepository.save(user);
             
-            Account admin = new Account("admin", passwordEncoder.encode("admin"), "ADMIN");
-            accountRepository.save(admin);
+        Account admin = new Account("admin", passwordEncoder.encode("admin"), "ADMIN");
+        accountRepository.save(admin);
             
-            Account moderator = new Account("moderator", passwordEncoder.encode("moderator"), "MODERATOR");
-            accountRepository.save(moderator);
-        }
+        Account moderator = new Account("moderator", passwordEncoder.encode("moderator"), "MODERATOR");
+        accountRepository.save(moderator);
+            
         Forum forum = new Forum("wepa-Forum");
         forumRepository.save(forum);
         
@@ -62,6 +61,8 @@ public class InitForum {
         
         Topic topic = new Topic("Ensimmäinen aihe");
         topicRepository.save(topic);
+        admin.getTopics().add(topic);
+        topic.addAccount(admin);
         subForum.addTopic(topic);
         
         Message message = new Message("Hello World!", "admin");
@@ -69,6 +70,7 @@ public class InitForum {
         messageRepository.save(message);
         topic.addMessage(message);
 
+        accountRepository.save(admin);
         forumRepository.save(forum);
         forumCategoryRepository.save(category);
         subForumRepository.save(subForum);

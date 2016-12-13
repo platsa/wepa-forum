@@ -15,7 +15,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import wepaForum.domain.Account;
 import wepaForum.domain.Message;
+import wepaForum.domain.Topic;
+import wepaForum.repository.AccountRepository;
 import wepaForum.repository.MessageRepository;
 import wepaForum.repository.TopicRepository;
 import wepaForum.service.DeletingService;
@@ -28,6 +31,8 @@ public class TopicController {
     private TopicRepository topicRepository;
     @Autowired
     private MessageRepository messageRepository;
+    @Autowired
+    private AccountRepository accountRepository;
     @Autowired
     private DeletingService deletingService;
     
@@ -53,10 +58,14 @@ public class TopicController {
             LOGGER.log(Level.INFO, "{0} failed to write a new message", new Object[]{SecurityContextHolder.getContext().getAuthentication().getName()});
             return "topic";
         }
+        Account account = accountRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName()).get(0);
         message.setDate(Calendar.getInstance().getTime());
-        message.setUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+        message.setUsername(account.getUsername());
         messageRepository.save(message);
-        topicRepository.findOne(id).addMessage(message);
+        Topic topic = topicRepository.findOne(id);
+        topic.addMessage(message);
+        topic.addAccount(account);
+        account.addTopic(topic);
         LOGGER.log(Level.INFO, "User {0} wrote a message to topic {1}", new Object[]{SecurityContextHolder.getContext().getAuthentication().getName(), topicRepository.findOne(id).getSubject()});
         return "redirect:/topic/" + id;
     }

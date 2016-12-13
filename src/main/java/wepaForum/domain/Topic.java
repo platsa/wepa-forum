@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
@@ -16,6 +17,8 @@ public class Topic extends AbstractPersistable<Long> {
     private String subject;
     @OneToMany(fetch = FetchType.LAZY)
     private List<Message> messages;
+    @ManyToMany(mappedBy = "topics")
+    private List<Account> accounts;
     
     public Topic() {}
     
@@ -49,5 +52,21 @@ public class Topic extends AbstractPersistable<Long> {
     
     public void deleteMessage(Message message) {
         messages.remove(message);
+    }
+    
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
+    }
+    
+    public List<Account> getAccounts() {
+        if (accounts == null)
+            accounts = new ArrayList<>();
+        return accounts;
+    }
+    
+    public void addAccount(Account account) {
+        if (accounts == null)
+            accounts = new ArrayList<>();
+        accounts.add(account);
     }
 }

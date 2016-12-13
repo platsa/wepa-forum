@@ -39,7 +39,7 @@
             <h3>Existing users:</h3>
         <ul>
             <li th:each="account : ${accounts}">
-                <p>Username: <span th:text="${account.username}"></span>, Permission: <span th:text="${account.permission}"></span></p>
+                <p>Username: <a th:href="@{/users/{id}(id=${account.id})}" th:text="${account.username}"></a>, Permission: <span th:text="${account.permission}"></span></p>
                 <form th:action="@{/users/{id}(id=${account.id})}" th:method="DELETE">
                     <input type="submit" value="Delete"/>
                 </form>
