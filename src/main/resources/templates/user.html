@@ -1,0 +1,19 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.springframework.org/security/tags">
+    <head>
+        <title>User</title>
+        <meta charset="UTF-8" />
+    </head>
+    <body>
+        <a th:href="@{/forum}">Back to Forums</a>
+        <p>Logged in as <span sec:authentication="name">Username</span> <form method="post" action="#" th:action="@{/logout}"><input type="submit" name="logout" value="Logout"/></form></p>
+        <div sec:authorize="hasAuthority('ADMIN')">
+            <h3>User <span th:text="${account.username}"></span> has written messages in these topics:</h3>
+        <ul>
+            <li th:each="topic : ${account.topics}">
+                <a th:href="@{/topic/{id}(id=${topic.id})}" th:text="${topic.subject}"></a>        
+            </li>
+        </ul>
+        </div>
+    </body>
+</html>
