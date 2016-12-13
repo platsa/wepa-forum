@@ -24,11 +24,13 @@ import wepaForum.repository.ForumRepository;
 import wepaForum.repository.SubForumRepository;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import wepaForum.domain.Account;
 import wepaForum.domain.Forum;
 import wepaForum.domain.ForumCategory;
 import wepaForum.domain.Message;
 import wepaForum.domain.SubForum;
 import wepaForum.domain.Topic;
+import wepaForum.repository.AccountRepository;
 import wepaForum.repository.MessageRepository;
 import wepaForum.repository.TopicRepository;
 
@@ -43,6 +45,8 @@ public class SubForumTest {
             + "kkkkkkkkk";
     @Autowired
     private WebApplicationContext webAppContext;
+    @Autowired
+    private AccountRepository accountRepository;
     @Autowired
     private ForumRepository forumRepository;
     @Autowired
@@ -156,6 +160,7 @@ public class SubForumTest {
             + subForumRepository.findAll().get(0).getTopics().get(0).getId()))
                 .andExpect(status().is3xxRedirection());
         assertEquals(0, topicRepository.findAll().size());
+        assertTrue(accountRepository.findByUsername("admin").get(0).getTopics().isEmpty());
     }
     
     @Test
@@ -172,6 +177,15 @@ public class SubForumTest {
     }
     
     public void setUpDb() {
+        Account user = new Account("user", "user", "USER");
+        accountRepository.save(user);
+            
+        Account admin = new Account("admin", "admin", "ADMIN");
+        accountRepository.save(admin);
+            
+        Account moderator = new Account("moderator", "moderator", "MODERATOR");
+        accountRepository.save(moderator);
+            
         Forum forum = new Forum("wepa-Forum");
         forumRepository.save(forum);
         
@@ -185,6 +199,8 @@ public class SubForumTest {
         
         Topic topic = new Topic("Ensimmäinen aihe");
         topicRepository.save(topic);
+        admin.getTopics().add(topic);
+        topic.addAccount(admin);
         subForum.addTopic(topic);
         
         Message message = new Message("Hello World!", "admin");
@@ -192,6 +208,7 @@ public class SubForumTest {
         messageRepository.save(message);
         topic.addMessage(message);
 
+        accountRepository.save(admin);
         forumRepository.save(forum);
         forumCategoryRepository.save(category);
         subForumRepository.save(subForum);
@@ -199,11 +216,13 @@ public class SubForumTest {
     }
     //Poistetaan kaikki kahteen kertaan, muuten jää joku kummittelemaan
     public void deleteDb() {
+        accountRepository.deleteAll();
         forumRepository.deleteAll();
         forumCategoryRepository.deleteAll();
         subForumRepository.deleteAll();
         topicRepository.deleteAll();
         messageRepository.deleteAll();
+        accountRepository.deleteAll();
         forumRepository.deleteAll();
         forumCategoryRepository.deleteAll();
         subForumRepository.deleteAll();

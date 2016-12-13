@@ -24,11 +24,13 @@ import wepaForum.repository.ForumRepository;
 import wepaForum.repository.SubForumRepository;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import wepaForum.domain.Account;
 import wepaForum.domain.Forum;
 import wepaForum.domain.ForumCategory;
 import wepaForum.domain.Message;
 import wepaForum.domain.SubForum;
 import wepaForum.domain.Topic;
+import wepaForum.repository.AccountRepository;
 import wepaForum.repository.MessageRepository;
 import wepaForum.repository.TopicRepository;
 
@@ -57,6 +59,8 @@ public class TopicTest {
             + "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk";
     @Autowired
     private WebApplicationContext webAppContext;
+    @Autowired
+    private AccountRepository accountRepository;
     @Autowired
     private ForumRepository forumRepository;
     @Autowired
@@ -116,11 +120,13 @@ public class TopicTest {
     }
     
     @Test
+    @Transactional
     @WithMockUser(username = "user", authorities = "USER")
     public void canAddWithUserPermission() throws Exception {
         mockMvc.perform(post(TOPICS_URI + topicRepository.findAll().get(0).getId()).param("message", "testmessage"))
                 .andExpect(status().is3xxRedirection());
         assertEquals(2, messageRepository.findAll().size());
+        assertEquals(accountRepository.findByUsername("user").get(0).getTopics().size(), 1);
         
     }
     
@@ -186,6 +192,15 @@ public class TopicTest {
     }
     
     public void setUpDb() {
+        Account user = new Account("user", "user", "USER");
+        accountRepository.save(user);
+            
+        Account admin = new Account("admin", "admin", "ADMIN");
+        accountRepository.save(admin);
+            
+        Account moderator = new Account("moderator", "moderator", "MODERATOR");
+        accountRepository.save(moderator);
+            
         Forum forum = new Forum("wepa-Forum");
         forumRepository.save(forum);
         
@@ -199,6 +214,8 @@ public class TopicTest {
         
         Topic topic = new Topic("Ensimmäinen aihe");
         topicRepository.save(topic);
+        admin.getTopics().add(topic);
+        topic.addAccount(admin);
         subForum.addTopic(topic);
         
         Message message = new Message("Hello World!", "admin");
@@ -206,6 +223,7 @@ public class TopicTest {
         messageRepository.save(message);
         topic.addMessage(message);
 
+        accountRepository.save(admin);
         forumRepository.save(forum);
         forumCategoryRepository.save(category);
         subForumRepository.save(subForum);
@@ -213,11 +231,13 @@ public class TopicTest {
     }
     //Poistetaan kaikki kahteen kertaan, muuten jää joku kummittelemaan
     public void deleteDb() {
+        accountRepository.deleteAll();
         forumRepository.deleteAll();
         forumCategoryRepository.deleteAll();
         subForumRepository.deleteAll();
         topicRepository.deleteAll();
         messageRepository.deleteAll();
+        accountRepository.deleteAll();
         forumRepository.deleteAll();
         forumCategoryRepository.deleteAll();
         subForumRepository.deleteAll();

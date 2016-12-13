@@ -98,7 +98,6 @@ public class DeletingService {
     public void deleteMessage(Long topicId, Long id) {
         Message message = messageRepository.findOne(id);
         topicRepository.findOne(topicId).deleteMessage(message);
-        accountRepository.findByUsername(message.getUsername()).get(0).getTopics().remove(topicRepository.findOne(id));
         messageRepository.delete(id);
     }
 }
