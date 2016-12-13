@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import wepaForum.domain.ForumCategory;
 import wepaForum.domain.SubForum;
 import wepaForum.repository.ForumCategoryRepository;
 import wepaForum.repository.ForumRepository;
@@ -32,6 +33,11 @@ public class CategoryController {
     private SubForumRepository subForumRepository;
     @Autowired
     private DeletingService deletingService;
+    
+    @ModelAttribute("forumCategory")
+    private ForumCategory getForumCategory() {
+        return new ForumCategory();
+    }
     
     @PreAuthorize("hasAuthority('ADMIN')")
     @RequestMapping(value = "{id}", method = RequestMethod.POST)

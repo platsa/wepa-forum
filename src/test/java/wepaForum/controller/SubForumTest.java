@@ -36,8 +36,8 @@ import wepaForum.repository.TopicRepository;
 @SpringBootTest
 @ContextConfiguration
 @ActiveProfiles("test")
-public class CategoryTest {
-    private static final String CATEGORIES_URI = "/category/";
+public class SubForumTest {
+    private static final String SUBFORUMS_URI = "/subforum/";
     private static final String tooLong = "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"
             + "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"
             + "kkkkkkkkk";
@@ -56,7 +56,7 @@ public class CategoryTest {
     private MockMvc mockMvc;
     
     
-    public CategoryTest() {
+    public SubForumTest() {
     }
     
     @BeforeClass
@@ -86,27 +86,27 @@ public class CategoryTest {
     //
     @Test
     public void cannotAddWithoutPermission() throws Exception {
-        mockMvc.perform(post(CATEGORIES_URI + forumCategoryRepository.findAll().get(0).getId()).param("subject", "testsubject"))
+        mockMvc.perform(post(SUBFORUMS_URI + subForumRepository.findAll().get(0).getId()).param("subject", "testsubject"))
                 .andExpect(status().isUnauthorized());
-        assertEquals(1, subForumRepository.findAll().size());
+        assertEquals(1, topicRepository.findAll().size());
         
     }
     
     @Test
     @Transactional    
     public void cannotDeleteWithoutPermission() throws Exception {
-        mockMvc.perform(delete(CATEGORIES_URI + forumCategoryRepository.findAll().get(0).getId() + "/"
-            + forumCategoryRepository.findAll().get(0).getSubForums().get(0).getId()))
+        mockMvc.perform(delete(SUBFORUMS_URI + subForumRepository.findAll().get(0).getId() + "/"
+            + subForumRepository.findAll().get(0).getTopics().get(0).getId()))
                 .andExpect(status().isUnauthorized());
-        assertEquals(1, subForumRepository.findAll().size());
+        assertEquals(1, topicRepository.findAll().size());
     }
     
     @Test
     @WithMockUser(username = "user", authorities = "USER")
-    public void cannotAddWithUserPermission() throws Exception {
-        mockMvc.perform(post(CATEGORIES_URI + forumCategoryRepository.findAll().get(0).getId()).param("subject", "testsubject"))
-                .andExpect(status().isForbidden());
-        assertEquals(1, subForumRepository.findAll().size());
+    public void canAddWithUserPermission() throws Exception {
+        mockMvc.perform(post(SUBFORUMS_URI + subForumRepository.findAll().get(0).getId()).param("subject", "testsubject"))
+                .andExpect(status().is3xxRedirection());
+        assertEquals(2, topicRepository.findAll().size());
         
     }
     
@@ -114,37 +114,37 @@ public class CategoryTest {
     @Transactional   
     @WithMockUser(username = "user", authorities = "USER")
     public void cannotDeleteWithUserPermission() throws Exception {
-        mockMvc.perform(delete(CATEGORIES_URI + forumCategoryRepository.findAll().get(0).getId() + "/"
-            + forumCategoryRepository.findAll().get(0).getSubForums().get(0).getId()))
+        mockMvc.perform(delete(SUBFORUMS_URI + subForumRepository.findAll().get(0).getId() + "/"
+            + subForumRepository.findAll().get(0).getTopics().get(0).getId()))
                 .andExpect(status().isForbidden());
-        assertEquals(1, subForumRepository.findAll().size());
+        assertEquals(1, topicRepository.findAll().size());
     }
     
     @Test
     @WithMockUser(username = "moderator", authorities = "MODERATOR")
-    public void cannotAddWithModPermission() throws Exception {
-        mockMvc.perform(post(CATEGORIES_URI + forumCategoryRepository.findAll().get(0).getId()).param("subject", "testsubject"))
-                .andExpect(status().isForbidden());
-        assertEquals(1, subForumRepository.findAll().size());
+    public void canAddWithModPermission() throws Exception {
+        mockMvc.perform(post(SUBFORUMS_URI + subForumRepository.findAll().get(0).getId()).param("subject", "testsubject"))
+                .andExpect(status().is3xxRedirection());
+        assertEquals(2, topicRepository.findAll().size());
         
     }
     
     @Test
     @Transactional   
     @WithMockUser(username = "moderator", authorities = "MODERATOR")
-    public void cannotDeleteWithModPermission() throws Exception {
-        mockMvc.perform(delete(CATEGORIES_URI + forumCategoryRepository.findAll().get(0).getId() + "/"
-            + forumCategoryRepository.findAll().get(0).getSubForums().get(0).getId()))
-                .andExpect(status().isForbidden());
-        assertEquals(1, subForumRepository.findAll().size());
+    public void canDeleteWithModPermission() throws Exception {
+        mockMvc.perform(delete(SUBFORUMS_URI + subForumRepository.findAll().get(0).getId() + "/"
+            + subForumRepository.findAll().get(0).getTopics().get(0).getId()))
+                .andExpect(status().is3xxRedirection());
+        assertEquals(0, topicRepository.findAll().size());
     }
     
     @Test
     @WithMockUser(username = "admin", authorities = "ADMIN")
     public void canAddWithAdminPermission() throws Exception {
-        mockMvc.perform(post(CATEGORIES_URI + forumCategoryRepository.findAll().get(0).getId()).param("subject", "testsubject"))
+        mockMvc.perform(post(SUBFORUMS_URI + subForumRepository.findAll().get(0).getId()).param("subject", "testsubject"))
                 .andExpect(status().is3xxRedirection());
-        assertEquals(2, subForumRepository.findAll().size());
+        assertEquals(2, topicRepository.findAll().size());
         
     }
     
@@ -152,22 +152,22 @@ public class CategoryTest {
     @Transactional
     @WithMockUser(username = "admin", authorities = "ADMIN")
     public void canDeleteWithAdminPermission() throws Exception {
-        mockMvc.perform(delete(CATEGORIES_URI + forumCategoryRepository.findAll().get(0).getId() + "/"
-            + forumCategoryRepository.findAll().get(0).getSubForums().get(0).getId()))
+        mockMvc.perform(delete(SUBFORUMS_URI + subForumRepository.findAll().get(0).getId() + "/"
+            + subForumRepository.findAll().get(0).getTopics().get(0).getId()))
                 .andExpect(status().is3xxRedirection());
-        assertEquals(0, subForumRepository.findAll().size());
+        assertEquals(0, topicRepository.findAll().size());
     }
     
     @Test
     @WithMockUser(username = "admin", authorities = "ADMIN")
     public void cannotAddEmptyOrTooLong() throws Exception {
-        mockMvc.perform(post(CATEGORIES_URI + forumCategoryRepository.findAll().get(0).getId()).param("subject", ""))
+        mockMvc.perform(post(SUBFORUMS_URI + subForumRepository.findAll().get(0).getId()).param("subject", ""))
                 .andExpect(status().is2xxSuccessful());
-        assertEquals(1, subForumRepository.findAll().size());
+        assertEquals(1, topicRepository.findAll().size());
         
-        mockMvc.perform(post(CATEGORIES_URI + forumCategoryRepository.findAll().get(0).getId()).param("subject", tooLong))
+        mockMvc.perform(post(SUBFORUMS_URI + subForumRepository.findAll().get(0).getId()).param("subject", tooLong))
                 .andExpect(status().is2xxSuccessful());
-        assertEquals(1, subForumRepository.findAll().size());
+        assertEquals(1, topicRepository.findAll().size());
         
     }
     
