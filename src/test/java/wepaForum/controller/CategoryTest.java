@@ -1,6 +1,6 @@
 package wepaForum.controller;
 
-import javax.servlet.http.HttpSession;
+import java.util.Calendar;
 import javax.transaction.Transactional;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -11,24 +11,31 @@ import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockHttpSession;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
+import org.springframework.security.test.context.support.WithMockUser;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import wepaForum.repository.AccountRepository;
 import wepaForum.repository.ForumCategoryRepository;
 import wepaForum.repository.ForumRepository;
 import wepaForum.repository.SubForumRepository;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import wepaForum.domain.Forum;
+import wepaForum.domain.ForumCategory;
+import wepaForum.domain.Message;
+import wepaForum.domain.SubForum;
+import wepaForum.domain.Topic;
+import wepaForum.repository.MessageRepository;
+import wepaForum.repository.TopicRepository;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ContextConfiguration
+@ActiveProfiles("test")
 public class CategoryTest {
     private static final String CATEGORIES_URI = "/category/";
     @Autowired
@@ -39,8 +46,10 @@ public class CategoryTest {
     private ForumCategoryRepository forumCategoryRepository;
     @Autowired
     private SubForumRepository subForumRepository;
+        @Autowired
+    private TopicRepository topicRepository;
     @Autowired
-    private AccountRepository accountRepository;
+    private MessageRepository messageRepository;
     private MockMvc mockMvc;
     
     
@@ -61,6 +70,8 @@ public class CategoryTest {
                 .webAppContextSetup(webAppContext)
                 .apply(springSecurity())
                 .build();
+        deleteDb();
+        setUpDb();
     }
     
     @After
@@ -72,27 +83,115 @@ public class CategoryTest {
     //
     @Test
     public void cannotAddWithoutPermission() throws Exception {
-        HttpSession session = mockMvc.perform(formLogin().user("admin").password("admin"))
-                .andReturn()
-                .getRequest()
-                .getSession();
-        mockMvc.perform(post(CATEGORIES_URI + forumCategoryRepository.findAll().get(0).getId())
-                .session((MockHttpSession) session))
+        mockMvc.perform(post(CATEGORIES_URI + forumCategoryRepository.findAll().get(0).getId()).param("subject", "testsubject"))
+                .andExpect(status().isUnauthorized());
+        assertEquals(1, subForumRepository.findAll().size());
+        
+    }
+    
+    @Test
+    @Transactional    
+    public void cannotDeleteWithoutPermission() throws Exception {
+        mockMvc.perform(delete(CATEGORIES_URI + forumCategoryRepository.findAll().get(0).getId() + "/"
+            + forumCategoryRepository.findAll().get(0).getSubForums().get(0).getId()))
+                .andExpect(status().isUnauthorized());
+        assertEquals(1, subForumRepository.findAll().size());
+    }
+    
+    @Test
+    @WithMockUser(username = "user", authorities = "USER")
+    public void cannotAddWithUserPermission() throws Exception {
+        mockMvc.perform(post(CATEGORIES_URI + forumCategoryRepository.findAll().get(0).getId()).param("subject", "testsubject"))
                 .andExpect(status().isForbidden());
+        assertEquals(1, subForumRepository.findAll().size());
+        
+    }
+    
+    @Test
+    @Transactional   
+    @WithMockUser(username = "user", authorities = "USER")
+    public void cannotDeleteWithUserPermission() throws Exception {
+        mockMvc.perform(delete(CATEGORIES_URI + forumCategoryRepository.findAll().get(0).getId() + "/"
+            + forumCategoryRepository.findAll().get(0).getSubForums().get(0).getId()))
+                .andExpect(status().isForbidden());
+        assertEquals(1, subForumRepository.findAll().size());
+    }
+    
+    @Test
+    @WithMockUser(username = "moderator", authorities = "MODERATOR")
+    public void cannotAddWithModPermission() throws Exception {
+        mockMvc.perform(post(CATEGORIES_URI + forumCategoryRepository.findAll().get(0).getId()).param("subject", "testsubject"))
+                .andExpect(status().isForbidden());
+        assertEquals(1, subForumRepository.findAll().size());
+        
+    }
+    
+    @Test
+    @Transactional   
+    @WithMockUser(username = "moderator", authorities = "MODERATOR")
+    public void cannotDeleteWithModPermission() throws Exception {
+        mockMvc.perform(delete(CATEGORIES_URI + forumCategoryRepository.findAll().get(0).getId() + "/"
+            + forumCategoryRepository.findAll().get(0).getSubForums().get(0).getId()))
+                .andExpect(status().isForbidden());
+        assertEquals(1, subForumRepository.findAll().size());
+    }
+    
+    @Test
+    @WithMockUser(username = "admin", authorities = "ADMIN")
+    public void canAddWithPermission() throws Exception {
+        mockMvc.perform(post(CATEGORIES_URI + forumCategoryRepository.findAll().get(0).getId()).param("subject", "testsubject"))
+                .andExpect(status().is3xxRedirection());
+        assertEquals(2, subForumRepository.findAll().size());
         
     }
     
     @Test
     @Transactional
-    public void cannotDeleteWithoutPermission() throws Exception {
-        MockHttpSession session = (MockHttpSession) mockMvc.perform(formLogin().user("admin").password("admin"))
-                .andReturn()
-                .getRequest()
-                .getSession();
+    @WithMockUser(username = "admin", authorities = "ADMIN")
+    public void canDeleteWithPermission() throws Exception {
         mockMvc.perform(delete(CATEGORIES_URI + forumCategoryRepository.findAll().get(0).getId() + "/"
-            + forumCategoryRepository.findAll().get(0).getSubForums().get(0).getId())
-                .session(session))
-                .andExpect(status().isForbidden());
-        assertEquals(1, subForumRepository.findAll().size());
+            + forumCategoryRepository.findAll().get(0).getSubForums().get(0).getId()))
+                .andExpect(status().is3xxRedirection());
+        assertEquals(0, subForumRepository.findAll().size());
+    }
+    
+    public void setUpDb() {
+        Forum forum = new Forum("wepa-Forum");
+        forumRepository.save(forum);
+        
+        ForumCategory category = new ForumCategory("Testausta");
+        forumCategoryRepository.save(category);
+        forum.addForumCategory(category);
+        
+        SubForum subForum = new SubForum("Testataan etusivua");
+        subForumRepository.save(subForum);
+        category.addSubForum(subForum);
+        
+        Topic topic = new Topic("Ensimmäinen aihe");
+        topicRepository.save(topic);
+        subForum.addTopic(topic);
+        
+        Message message = new Message("Hello World!", "admin");
+        message.setDate(Calendar.getInstance().getTime());
+        messageRepository.save(message);
+        topic.addMessage(message);
+
+        forumRepository.save(forum);
+        forumCategoryRepository.save(category);
+        subForumRepository.save(subForum);
+        topicRepository.save(topic);
+    }
+    //Poistetaan kaikki kahteen kertaan, muuten jää joku kummittelemaan
+    public void deleteDb() {
+        forumRepository.deleteAll();
+        forumCategoryRepository.deleteAll();
+        subForumRepository.deleteAll();
+        topicRepository.deleteAll();
+        messageRepository.deleteAll();
+        forumRepository.deleteAll();
+        forumCategoryRepository.deleteAll();
+        subForumRepository.deleteAll();
+        topicRepository.deleteAll();
+        messageRepository.deleteAll();
     }
 }

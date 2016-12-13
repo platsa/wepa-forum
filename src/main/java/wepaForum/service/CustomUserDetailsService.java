@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,6 +15,7 @@ import wepaForum.domain.Account;
 import wepaForum.repository.AccountRepository;
 
 @Service
+@Profile(value = {"default", "production"})
 public class CustomUserDetailsService implements UserDetailsService {
     private static final Logger LOGGER = Logger.getLogger(CustomUserDetailsService.class.getName());
     @Autowired
