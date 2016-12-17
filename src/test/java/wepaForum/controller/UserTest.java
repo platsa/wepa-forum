@@ -66,6 +66,54 @@ public class UserTest {
     // The methods must be annotated with annotation @Test. For example:
     //
     @Test
+    public void cantViewUsersWithoutPermission() throws Exception {
+        mockMvc.perform(get(USERS_URI)).andExpect(status().isUnauthorized());
+    }
+    
+    @Test
+    @WithMockUser(username = "user", authorities = "USER")
+    public void cantViewUsersWithUserPermission() throws Exception {
+        mockMvc.perform(get(USERS_URI)).andExpect(status().isForbidden());
+    }
+    
+    @Test
+    @WithMockUser(username = "moderator", authorities = "MODERATOR")
+    public void cantViewUsersWithModPermission() throws Exception {
+        mockMvc.perform(get(USERS_URI)).andExpect(status().isForbidden());
+    }
+    
+    @Test
+    @WithMockUser(username = "admin", authorities = "ADMIN")
+    public void canViewUsersWithAdminPermission() throws Exception {
+        mockMvc.perform(get(USERS_URI)).andExpect(status().isOk())
+                .andExpect(model().attributeExists("accounts"));
+    }
+    
+    @Test
+    public void cantViewUserWithoutPermission() throws Exception {
+        mockMvc.perform(get(USERS_URI + accountRepository.findAll().get(0).getId())).andExpect(status().isUnauthorized());
+    }
+    
+    @Test
+    @WithMockUser(username = "user", authorities = "USER")
+    public void cantViewUserWithUserPermission() throws Exception {
+        mockMvc.perform(get(USERS_URI + accountRepository.findAll().get(0).getId())).andExpect(status().isForbidden());
+    }
+    
+    @Test
+    @WithMockUser(username = "moderator", authorities = "MODERATOR")
+    public void cantViewUserWithModPermission() throws Exception {
+        mockMvc.perform(get(USERS_URI + accountRepository.findAll().get(0).getId())).andExpect(status().isForbidden());
+    }
+    
+    @Test
+    @WithMockUser(username = "admin", authorities = "ADMIN")
+    public void canViewUserWithAdminPermission() throws Exception {
+        mockMvc.perform(get(USERS_URI + accountRepository.findAll().get(0).getId())).andExpect(status().isOk())
+                .andExpect(model().attributeExists("account"));
+    }
+    
+    @Test
     public void cannotAddWithoutPermission() throws Exception {
         mockMvc.perform(post(USERS_URI).param("username", "username")
                 .param("password", "password")

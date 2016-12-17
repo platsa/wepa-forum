@@ -65,6 +65,11 @@ public class RegistrationTest {
     // The methods must be annotated with annotation @Test. For example:
     //
     @Test
+    public void testGet() throws Exception {
+        mockMvc.perform(get(REGISTRATION_URI)).andExpect(status().isOk());
+    }
+    
+    @Test
     public void canAddWithoutPermission() throws Exception {
         mockMvc.perform(post(REGISTRATION_URI).param("username", "username")
                 .param("password", "password"))

@@ -89,6 +89,11 @@ public class SubForumTest {
     // The methods must be annotated with annotation @Test. For example:
     //
     @Test
+    public void getReturnsSubForum() throws Exception {
+        mockMvc.perform(get(SUBFORUMS_URI + subForumRepository.findAll().get(0).getId())).andExpect(model().attributeExists("subForum"));
+    }
+    
+    @Test
     public void cannotAddWithoutPermission() throws Exception {
         mockMvc.perform(post(SUBFORUMS_URI + subForumRepository.findAll().get(0).getId()).param("subject", "testsubject"))
                 .andExpect(status().isUnauthorized());

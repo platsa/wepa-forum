@@ -103,6 +103,35 @@ public class TopicTest {
     // The methods must be annotated with annotation @Test. For example:
     //
     @Test
+    public void getReturnsTopic() throws Exception {
+        mockMvc.perform(get(TOPICS_URI + topicRepository.findAll().get(0).getId())).andExpect(model().attributeExists("topic"));
+    }
+    
+    @Test
+    public void cantViewUsersWithoutPermission() throws Exception {
+        mockMvc.perform(get(TOPICS_URI + topicRepository.findAll().get(0).getId() + "/users")).andExpect(status().isUnauthorized());
+    }
+    
+    @Test
+    @WithMockUser(username = "user", authorities = "USER")
+    public void cantViewUsersWithUserPermission() throws Exception {
+        mockMvc.perform(get(TOPICS_URI + topicRepository.findAll().get(0).getId() + "/users")).andExpect(status().isForbidden());
+    }
+    
+    @Test
+    @WithMockUser(username = "moderator", authorities = "MODERATOR")
+    public void cantViewUsersWithModPermission() throws Exception {
+        mockMvc.perform(get(TOPICS_URI + topicRepository.findAll().get(0).getId() + "/users")).andExpect(status().isForbidden());
+    }
+    
+    @Test
+    @WithMockUser(username = "admin", authorities = "ADMIN")
+    public void canViewUsersWithAdminPermission() throws Exception {
+        mockMvc.perform(get(TOPICS_URI + topicRepository.findAll().get(0).getId() + "/users")).andExpect(status().isOk())
+                .andExpect(model().attributeExists("topic"));
+    }
+    
+    @Test
     public void cannotAddWithoutPermission() throws Exception {
         mockMvc.perform(post(TOPICS_URI + topicRepository.findAll().get(0).getId()).param("message", "testmessage"))
                 .andExpect(status().isUnauthorized());

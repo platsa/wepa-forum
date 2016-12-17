@@ -46,8 +46,4 @@ public class Forum extends AbstractPersistable<Long> {
             forumCategories = new ArrayList<>();
         forumCategories.add(forumCategory);
     }
-    
-    public void deleteForumCategory(ForumCategory forumCategory) {
-        forumCategories.remove(forumCategory);
-    }
 }

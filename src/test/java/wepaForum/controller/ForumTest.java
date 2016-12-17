@@ -89,6 +89,11 @@ public class ForumTest {
     // The methods must be annotated with annotation @Test. For example:
     //
     @Test
+    public void getReturnsForums() throws Exception {
+        mockMvc.perform(get(FORUM_URI)).andExpect(model().attributeExists("forums"));
+    }
+    
+    @Test
     public void cannotAddWithoutPermission() throws Exception {
         mockMvc.perform(post(FORUM_URI + forumRepository.findAll().get(0).getId()).param("category", "testcategory"))
                 .andExpect(status().isUnauthorized());
