@@ -1,0 +1,29 @@
+Toteutetut käyttötapaukset:
+- Käyttäjä rekisteröityy
+- Käyttäjä kirjautuu
+- Käyttäjä näkee foorumin etusivun, jossa foorumikategoriat ja alafoorumit
+- Kirjautumaton käyttäjä siirtyy kirjautumaan
+- Kirjautumaton käyttäjä siirtyy rekisteröitymään
+- Admin siirtyy käyttäjienhallintaan
+- Kirjautunut käyttäjä kirjautuu ulos
+- Admin poistaa foorumikategorian
+- Käyttäjä näkee foorumikategoriat ja alafoorumit
+- Admin poistaa alafoorumin
+- Admin lisää alafoorumin
+- Admin lisää foorumikategorian
+- Käyttäjä siirtyy alafoorumiin
+- Käyttäjä siirtyy takaisin etusivulle
+- Käyttäjä näkee keskusteluaiheet
+- Admin/moderaattori poistaa keskusteluaiheen
+- Kirjautunut käyttäjä lisää keskusteluaiheen
+- Käyttäjä siirtyy lukemaan keskusteluaiheen viestejä
+- Admin siirtyy tarkastelemaan aiheeseen kirjoittaneita käyttäjiä
+- Käyttäjä näkee keskusteluaiheen viestit, niiden kirjoittajat ja ajankohdat
+- Admin/moderaattori poistaa viestin
+- Kirjautunut käyttäjä kirjoittaa uuden viestin
+- Admin näkee kaikki käyttäjät ja heidän käyttöoikeutensa käyttäjienhallinnassa
+- Admin siirtyy katselemaan aiheita joihin käyttäjä on kirjoittanut
+- Admin lisää käyttäjän valitsemallaan käyttöoikeudella
+- Admin poistaa käyttäjän
+- Admin näkee kaikki tiettyyn keskusteluaiheeseen kirjoittaneet käyttäjät
+

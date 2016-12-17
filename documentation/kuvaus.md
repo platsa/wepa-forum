@@ -1,0 +1,1 @@
+- Sovellus on keskustelufoorumisovellus, jossa käyttäjät voivat keskustella eri aiheista ja ylläpitäjät sekä moderaattorit voivat hallita keskustelua, keskustelualueita ja käyttäjiä.
