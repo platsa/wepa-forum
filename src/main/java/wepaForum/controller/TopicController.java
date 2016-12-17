@@ -47,6 +47,7 @@ public class TopicController {
         return "topic";
     }
     
+    @PreAuthorize("hasAuthority('ADMIN')")
     @RequestMapping(value = "{id}/users", method = RequestMethod.GET)
     public String viewUsers(@PathVariable("id") Long id, Model model) {
         model.addAttribute("topic", topicRepository.findOne(id));
