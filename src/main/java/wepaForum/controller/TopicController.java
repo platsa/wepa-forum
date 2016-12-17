@@ -47,6 +47,12 @@ public class TopicController {
         return "topic";
     }
     
+    @RequestMapping(value = "{id}/users", method = RequestMethod.GET)
+    public String viewUsers(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("topic", topicRepository.findOne(id));
+        return "topicusers";
+    }
+    
     @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR','USER')")
     @RequestMapping(value = "{id}", method = RequestMethod.POST)
     @Transactional

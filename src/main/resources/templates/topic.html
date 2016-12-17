@@ -4,7 +4,7 @@
         <title th:text="${topic.subject}">Topic</title>
         <meta charset="UTF-8" />
     </head>
-    <body>
+    <body>       
 
         <div sec:authorize="isAnonymous()">
             <p><a th:href="@{/login}">Login</a> or <a th:href="@{/register}">Register</a></p>
@@ -13,7 +13,10 @@
             <p>Logged in as <span sec:authentication="name">Username</span> <form method="post" action="#" th:action="@{/logout}"><input type="submit" name="logout" value="Logout"/></form></p>
         </div>
         <a th:href="@{/forum}">Back to Forums</a>
-        
+        <div sec:authorize="hasAuthority('ADMIN')">
+            <a th:href="@{/topic/{id}/users(id = ${topic.id})}" >Users who have written to this topic</a>
+        </div>
+        <h3 th:text="${topic.subject}">Subject</h3>
         <div th:each="message : ${topic.messages}">
             <h4><span th:text="${message.username}">User</span> wrote on <span th:text="${#calendars.format(message.date,'yyyy-MM-dd HH:mm')}">Date</span></h4>
             <p th:text="${message.message}">Message</p>
