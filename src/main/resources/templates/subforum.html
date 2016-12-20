@@ -19,7 +19,7 @@
                 <a th:href="@{/topic/{id}(id=${topic.id})}" th:text="${topic.subject}"></a>
                 <div sec:authorize="hasAnyAuthority('ADMIN','MODERATOR')">
                     <form th:action="@{/subforum/{subforumId}/{id}(subforumId=${subForum.id}, id=${topic.id})}" th:method="DELETE">
-                        <input type="submit" value="Delete"/>
+                        <input name="delete_topic" type="submit" value="Delete"/>
                     </form>
                 </div>
             </li>
@@ -29,7 +29,7 @@
             <h3>Add a new topic:</h3>
             <form action="#" th:action="@{/subforum/{id}(id=${subForum.id})}" th:object="${topic}" th:method="POST">
                 <input type="text" th:field="*{subject}"></input><br/>
-                <input type="submit" value="Add"/>
+                <input name="add_topic" type="submit" value="Add"/>
                 <p th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}">Subject Error</p>
             </form>
         </div>
