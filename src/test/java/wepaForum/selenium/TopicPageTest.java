@@ -2,9 +2,9 @@ package wepaForum.selenium;
 
 import java.util.Calendar;
 import org.fluentlenium.adapter.FluentTest;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -31,7 +31,7 @@ import wepaForum.repository.TopicRepository;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("seletest")
-public class ForumPageTest extends FluentTest {
+public class TopicPageTest extends FluentTest {
     @Autowired
     private ForumRepository forumRepository;
     @Autowired
@@ -64,126 +64,65 @@ public class ForumPageTest extends FluentTest {
     }
     
     @Test
-    public void canLogin() {
-        goTo("http://localhost:" + port);
-        webDriver.findElement(By.linkText("Login")).click();
-        assertTrue(pageSource().contains("Login with Username and Password"));
-        enterDetailsAndSubmit("user", "user");
-        assertTrue(pageSource().contains("Logged in as"));
-        assertTrue(pageSource().contains("Logout"));
-    }
-    
-    @Test
-    public void cantLoginWithWrongCredentials() {
-        goTo("http://localhost:" + port + "/login");
-        enterDetailsAndSubmit("false", "credentials");
-        assertTrue(!pageSource().contains("Logged in as"));
-        assertTrue(pageSource().contains("Bad credentials"));
-    }
-    
-    @Test
-    public void noAdminLinksToAnonymous() {
-        goTo("http://localhost:" + port);
+    public void noAddOrDeleteLinksToAnonymous() {
+        goTo("http://localhost:" + port + "/topic/" + topicRepository.findAll().get(0).getId());
+        assertTrue(webDriver.getTitle().contains("Ensimmäinen aihe"));
         assertTrue(!pageSource().contains("Delete"));
         assertTrue(!pageSource().contains("Add a new"));
-        assertTrue(!pageSource().contains("User Management"));
+        assertTrue(!pageSource().contains("Users who have written to this topic"));
     }
     
     @Test
-    public void noAdminLinksToUser() {
-        goTo("http://localhost:" + port + "/login");
-        enterDetailsAndSubmit("user", "user");
+    public void noDeleteLinksToUser() {
+        loginAsAndGoToTopic("user", "user");
         assertTrue(!pageSource().contains("Delete"));
-        assertTrue(!pageSource().contains("Add a new"));
-        assertTrue(!pageSource().contains("User Management"));
+        assertTrue(pageSource().contains("Add a new"));
+        assertTrue(!pageSource().contains("Users who have written to this topic"));
     }
     
     @Test
-    public void noAdminLinksToModerator() {
-        goTo("http://localhost:" + port + "/login");
-        enterDetailsAndSubmit("moderator", "moderator");
-        assertTrue(!pageSource().contains("Delete"));
-        assertTrue(!pageSource().contains("Add a new"));
-        assertTrue(!pageSource().contains("User Management"));
-    }
-    
-    @Test
-    public void adminLinksToAdmin() {
-        goTo("http://localhost:" + port + "/login");
-        enterDetailsAndSubmit("admin", "admin");
+    public void showDeleteLinksToModerator() {
+        loginAsAndGoToTopic("moderator", "moderator");
         assertTrue(pageSource().contains("Delete"));
         assertTrue(pageSource().contains("Add a new"));
-        assertTrue(pageSource().contains("User Management"));
+        assertTrue(!pageSource().contains("Users who have written to this topic"));
     }
     
     @Test
-    public void adminCanDeleteSubForum() {
-        goTo("http://localhost:" + port + "/login");
-        enterDetailsAndSubmit("admin", "admin");
-        assertTrue(pageSource().contains("Testataan etusivua"));
-        find(By.name("delete_subforum")).submit();
-        assertTrue(!pageSource().contains("Testataan etusivua"));
+    public void showAllLinksToAdmin() {
+        loginAsAndGoToTopic("admin", "admin");
+        assertTrue(pageSource().contains("Delete"));
+        assertTrue(pageSource().contains("Add a new"));
+        assertTrue(pageSource().contains("Users who have written to this topic"));
     }
     
     @Test
-    public void adminCanDeleteCategory() {
-        goTo("http://localhost:" + port + "/login");
-        enterDetailsAndSubmit("admin", "admin");
-        assertTrue(pageSource().contains("Testausta"));
-        find(By.name("delete_category")).submit();
-        assertTrue(!pageSource().contains("Testausta"));
+    public void canDeleteMessage() {
+        loginAsAndGoToTopic("admin", "admin");
+        assertTrue(pageSource().contains("Hello World"));
+        find(By.name("delete_message")).submit();
+        assertTrue(!pageSource().contains("Hello World"));
     }
     
     @Test
-    public void adminCanAddSubforum() {
-        goTo("http://localhost:" + port + "/login");
-        enterDetailsAndSubmit("admin", "admin");
-        assertTrue(!pageSource().contains("TestSubForum"));
-        fill(find(By.name("subject"))).with("TestSubForum");
-        find(By.name("add_subforum")).submit();
-        assertTrue(pageSource().contains("TestSubForum"));        
+    public void canAddMessage() {
+        loginAsAndGoToTopic("admin", "admin");
+        assertTrue(!pageSource().contains("Toinen topic"));
+        fill(find(By.name("message"))).with("Toinen topic");
+        find(By.name("add_message")).submit();
+        assertTrue(pageSource().contains("Toinen topic"));
     }
     
     @Test
-    public void adminCanAddCategory() {
-        goTo("http://localhost:" + port + "/login");
-        enterDetailsAndSubmit("admin", "admin");
-        assertTrue(!pageSource().contains("TestCategory"));
-        fill(find(By.name("category"))).with("TestCategory");
-        find(By.name("add_category")).submit();
-        assertTrue(pageSource().contains("TestCategory"));        
-    }
-    
-    @Test
-    public void adminCantAddEmptyOrTooLongSubforum() {
-        goTo("http://localhost:" + port + "/login");
-        enterDetailsAndSubmit("admin", "admin");
-        fill(find(By.name("subject"))).with("");
-        find(By.name("add_subforum")).submit();
+    public void cantAddEmptyOrTooLongMessage() {
+        loginAsAndGoToTopic("admin", "admin");
+        fill(find(By.name("message"))).with("");
+        find(By.name("add_message")).submit();
         assertTrue(pageSource().contains("may not be empty"));
-        fill(find(By.name("subject"))).with(longString());
-        find(By.name("add_subforum")).submit();
+        
+        fill(find(By.name("message"))).with(longString());
+        find(By.name("add_message")).submit();
         assertTrue(pageSource().contains("length must be"));
-    }
-    
-    @Test
-    public void adminCantAddEmptyOrTooLongCategory() {
-        goTo("http://localhost:" + port + "/login");
-        enterDetailsAndSubmit("admin", "admin");
-        fill(find(By.name("category"))).with("");
-        find(By.name("add_category")).submit();
-        assertTrue(pageSource().contains("may not be empty"));
-        fill(find(By.name("category"))).with(longString());
-        find(By.name("add_category")).submit();
-        assertTrue(pageSource().contains("length must be"));
-    }
-    
-    private String longString() {
-        String s = "k";
-        for (int i = 0; i < 100; i++) {
-            s += "k";
-        }
-        return s;
     }
     
     private void enterDetailsAndSubmit(String username, String password) {
@@ -192,6 +131,20 @@ public class ForumPageTest extends FluentTest {
         find(By.name("submit")).submit();
     }
     
+    private void loginAsAndGoToTopic(String username, String password) {
+        goTo("http://localhost:" + port + "/login");
+        enterDetailsAndSubmit(username, password);
+        goTo("http://localhost:" + port + "/topic/" + topicRepository.findAll().get(0).getId());
+    }
+    
+    private String longString() {
+        String s = "k";
+        for (int i = 0; i < 1000; i++) {
+            s += "k";
+        }
+        return s;
+    }
+
     private void initDb() {
         Account user = new Account("user", passwordEncoder.encode("user"), "USER");
         accountRepository.save(user);

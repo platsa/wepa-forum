@@ -22,7 +22,7 @@
             <p th:text="${message.message}">Message</p>
             <div sec:authorize="hasAnyAuthority('ADMIN','MODERATOR')">
                 <form th:action="@{/topic/{topicId}/{id}(topicId=${topic.id}, id=${message.id})}" th:method="DELETE">
-                    <input type="submit" value="Delete"/>
+                    <input name="delete_message" type="submit" value="Delete"/>
                 </form>
             </div>
         </div>
@@ -31,7 +31,7 @@
             <h3>Add a new message:</h3>
             <form action="#" th:action="@{/topic/{id}(id=${topic.id})}" th:object="${message}" th:method="POST">
                 <textarea rows = "10" cols = "100" th:field="*{message}"></textarea><br/>
-                <input type="submit" value="Add"/>
+                <input name="add_message" type="submit" value="Add"/>
                 <p th:if="${#fields.hasErrors('message')}" th:errors="*{message}">Message Error</p>
             </form>
         </div>

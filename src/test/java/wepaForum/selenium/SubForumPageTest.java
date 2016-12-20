@@ -109,6 +109,18 @@ public class SubForumPageTest extends FluentTest {
         assertTrue(pageSource().contains("Toinen aihe"));
     }
     
+    @Test
+    public void cantAddEmptyOrTooLongTopic() {
+        loginAsAndGoToSubForum("admin", "admin");
+        fill(find(By.name("subject"))).with("");
+        find(By.name("add_topic")).submit();
+        assertTrue(pageSource().contains("may not be empty"));
+        
+        fill(find(By.name("subject"))).with(longString());
+        find(By.name("add_topic")).submit();
+        assertTrue(pageSource().contains("length must be"));
+    }
+    
     private void enterDetailsAndSubmit(String username, String password) {
         fill(find(By.name("username"))).with(username);
         fill(find(By.name("password"))).with(password);
@@ -119,6 +131,14 @@ public class SubForumPageTest extends FluentTest {
         goTo("http://localhost:" + port + "/login");
         enterDetailsAndSubmit(username, password);
         goTo("http://localhost:" + port + "/subforum/" + subForumRepository.findAll().get(0).getId());
+    }
+    
+    private String longString() {
+        String s = "k";
+        for (int i = 0; i < 100; i++) {
+            s += "k";
+        }
+        return s;
     }
 
     private void initDb() {
