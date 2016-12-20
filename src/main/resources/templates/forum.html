@@ -20,7 +20,7 @@
                 <h2 th:text="${category.category}">Category</h2>
                 <div sec:authorize="hasAuthority('ADMIN')">
                     <form th:action="@{/forum/{forumId}/{id}(forumId=${forum.id}, id=${category.id})}" th:method="DELETE">
-                        <input type="submit" value="Delete"/>
+                        <input name="delete_category" type="submit" value="Delete"/>
                     </form>
                 </div>
                 <ul>
@@ -28,7 +28,7 @@
                     <a th:href="@{/subforum/{id}(id=${subforum.id})}" th:text="${subforum.subject}"></a>
                     <div sec:authorize="hasAuthority('ADMIN')">
                         <form th:action="@{/category/{categoryId}/{id}(categoryId=${category.id}, id=${subforum.id})}" th:method="DELETE">
-                            <input type="submit" value="Delete"/>
+                            <input name="delete_subforum" type="submit" value="Delete"/>
                         </form>
                     </div>
                     </li>
@@ -37,7 +37,7 @@
                     <h3>Add a new subforum to this category:</h3>
                     <form action="#" th:action="@{/category/{id}(id=${category.id})}" th:object="${subForum}" th:method="POST">
                         <input type="text" th:field="*{subject}"></input><br/>
-                        <input type="submit" value="Add"/>
+                        <input name="add_subforum" type="submit" value="Add"/>
                         <p th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}">SubForum Error</p>
                     </form>
                 </div>
@@ -46,7 +46,7 @@
                 <h2>Add a new category:</h2>
                 <form action="#" th:action="@{/forum/{id}(id=${forum.id})}" th:object="${forumCategory}" th:method="POST">
                     <input type="text" th:field="*{category}"></input><br/>
-                    <input type="submit" value="Add"/>
+                    <input name="add_category" type="submit" value="Add"/>
                     <p th:if="${#fields.hasErrors('category')}" th:errors="*{category}">Category Error</p>
                 </form>
             </div>

@@ -15,7 +15,7 @@ import wepaForum.domain.Account;
 import wepaForum.repository.AccountRepository;
 
 @Service
-@Profile(value = {"default", "production"})
+@Profile(value = {"default", "production", "seletest"})
 public class CustomUserDetailsService implements UserDetailsService {
     private static final Logger LOGGER = Logger.getLogger(CustomUserDetailsService.class.getName());
     @Autowired
