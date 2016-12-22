@@ -32,7 +32,7 @@
                         <td th:if="${#fields.hasErrors('permission')}" th:errors="*{permission}">Permission Error</td>
                     </tr>
                     <tr>
-                        <td><button type="submit">Add</button></td>
+                        <td><button name="submit" type="submit">Add</button></td>
                     </tr>
                 </table>
             </form>
@@ -41,7 +41,7 @@
             <li th:each="account : ${accounts}">
                 <p>Username: <a th:href="@{/users/{id}(id=${account.id})}" th:text="${account.username}"></a>, Permission: <span th:text="${account.permission}"></span></p>
                 <form th:action="@{/users/{id}(id=${account.id})}" th:method="DELETE">
-                    <input type="submit" value="Delete"/>
+                    <input name="delete_account" type="submit" value="Delete"/>
                 </form>
         
             </li>

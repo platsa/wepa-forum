@@ -13,7 +13,7 @@
             <p>Logged in as <span sec:authentication="name">Username</span> <form method="post" action="#" th:action="@{/logout}"><input type="submit" name="logout" value="Logout"/></form></p>
         </div>
         <a th:href="@{/forum}">Back to Forums</a>
-        
+        <h3 th:text="${subForum.subject}">Subforum</h3>
         <ul>
             <li th:each="topic : ${subForum.topics}">
                 <a th:href="@{/topic/{id}(id=${topic.id})}" th:text="${topic.subject}"></a>
